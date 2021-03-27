@@ -1,0 +1,48 @@
+insert into employeeinfo (empid, empname, dateofjoining, dep, designation, salary) values (101, 'ABC','2021-01-02','Technical', 'CTO',45000.0);
+insert into employeeinfo (empid, empname, dateofjoining, dep, designation, salary) values (121, 'XYZ','2021-01-10','Technical', 'CEO',50000.0);
+insert into employeeinfo (empid, empname, dateofjoining, dep, salary) values (111, 'PQR','2021-01-06','Accounts', ''Manager', 30000.0);
+
+select * from  employeeinfo;
+
+ empid | dateofjoining                   | dep       | designation | empname | salary
+-------+---------------------------------+-----------+-------------+---------+--------
+   111 | 2021-01-06 00:00:00.000000+0000 |  Accounts |     Manager |     PQR |  30000
+   121 | 2021-01-10 00:00:00.000000+0000 | Technical |         CEO |     XYZ |  50000
+   101 | 2021-01-02 00:00:00.000000+0000 | Technical |         CTO |     ABC |  45000
+
+cqlsh:employee> update employeeinfo set empname = 'RBR', dep = 'Software' where empid = 121;
+
+cqlsh:employee> select * from  employeeinfo;
+
+ empid | dateofjoining                   | dep       | designation | empname | salary
+-------+---------------------------------+-----------+-------------+---------+--------
+   111 | 2021-01-06 00:00:00.000000+0000 |  Accounts |     Manager |     PQR |  30000
+   121 | 2021-01-10 00:00:00.000000+0000 |  Software |         CEO |     RBR |  50000
+   101 | 2021-01-02 00:00:00.000000+0000 | Technical |         CTO |     ABC |  45000
+
+cqlsh:employee> create index on employeeinfo(salary);
+
+cqlsh:employee> alter table employeeinfo add projects set<text>;
+
+cqlsh:employee> update employeeinfo set projects = {'Test', 'Start'} where empid in(111,121,101);
+
+cqlsh:employee> select * from employeeinfo;
+
+ empid | dateofjoining                   | dep       | designation | empname | projects          | salary
+-------+---------------------------------+-----------+-------------+---------+-------------------+--------
+   111 | 2021-01-06 00:00:00.000000+0000 |  Accounts |     Manager |     PQR | {'Start', 'Test'} |  30000
+   121 | 2021-01-10 00:00:00.000000+0000 |  Software |         CEO |     RBR | {'Start', 'Test'} |  50000
+   101 | 2021-01-02 00:00:00.000000+0000 | Technical |         CTO |     ABC | {'Start', 'Test'} |  45000
+
+(3 rows)
+
+cqlsh:employee> insert into employeeinfo(empid, empname, designation, dateofjoining, salary, dep) values (121, 'RRB', 'CMO', '2021-01-06', 45000.0, 'Corporate') using ttl 120;
+
+cqlsh:employee> select ttl(designation) from employeeinfo where empid = 121;
+
+ ttl(designation)
+------------------
+               91
+
+(1 rows)
+
